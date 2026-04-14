@@ -24,43 +24,46 @@
 </script>
 <body>
 
-    @include('layouts.header')
 
-<div class="d-flex">
+@include('layouts.header')
 
-    @auth
-        @if(auth()->user()->role == 'admin')
-            @include('layouts.sidebar')
-        @endif
-    @endauth
+<div class="d-flex" style="min-height: 100vh;">
+
+    {{-- SIDEBAR ADMIN --}}
+    @if(auth()->user()->role == 'admin')
+        @include('layouts.sidebar')
+    @endif
+
+    {{-- SIDEBAR USER --}}
+    @if(auth()->user()->role == 'user')
+        @include('layouts.user-sidebar')
+    @endif
 
     <div class="flex-grow-1 p-4">
-        <div class="container">
 
-            @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show mt-3">
-                    <i class="fas fa-check-circle"></i> {{ session('success') }}
-                    <button class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
+        {{-- ALERTAS --}}
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show">
+                <i class="fas fa-check-circle"></i> {{ session('success') }}
+                <button class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
 
-            @if(session('error'))
-                <div class="alert alert-danger alert-dismissible fade show mt-3">
-                    <i class="fas fa-times-circle"></i> {{ session('error') }}
-                    <button class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show">
+                <i class="fas fa-times-circle"></i> {{ session('error') }}
+                <button class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
 
-            @if(session('warning'))
-                <div class="alert alert-warning alert-dismissible fade show mt-3">
-                    <i class="fas fa-exclamation-triangle"></i> {{ session('warning') }}
-                    <button class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
+        @if(session('warning'))
+            <div class="alert alert-warning alert-dismissible fade show">
+                <i class="fas fa-exclamation-triangle"></i> {{ session('warning') }}
+                <button class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
 
-            @yield('content')
+        @yield('content')
 
-        </div>
     </div>
-
 </div>

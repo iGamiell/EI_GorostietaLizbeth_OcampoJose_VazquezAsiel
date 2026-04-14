@@ -76,9 +76,11 @@ class AuthController extends Controller
     // Logout
     public function logout(Request $request)
     {
+        session()->forget('google_token');
+        session()->flush();
         Auth::logout();
 
-        $request->session()->invalidate(); // 🔐 seguridad
+        $request->session()->invalidate(); 
         $request->session()->regenerateToken();
 
         return redirect('/login')->with('success', 'Sesión cerrada correctamente');

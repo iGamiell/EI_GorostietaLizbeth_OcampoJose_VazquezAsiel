@@ -11,16 +11,25 @@
 <table class="table table-striped">
     <tr>
         <th>Título</th>
-        <th>Acciones</th>
+        <th>Notas</th>
+        <th>Usuario</th>
     </tr>
 
     @foreach($notes as $n)
     <tr>
+        <td>{{ $n->user->name ?? 'N/A' }}</td>
         <td>{{ $n->title }}</td>
         <td>
-            <a href="{{ route('notes.edit', $n->id) }}" class="btn btn-warning btn-sm">Editar</a>
-            <a href="{{ route('notes.destroy', $n->id) }}" class="btn btn-danger btn-sm">Eliminar</a>
-        </td>
+            <a href="/notes/edit/{{ $n->id }}" class="btn btn-warning btn-sm">
+                <i class="fas fa-edit"></i>
+            </a>
+
+            <form action="{{ route('notes.destroy', $n->id) }}" method="POST" style="display:inline;">
+                @csrf
+                <button class="btn btn-danger btn-sm">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </form>
     </tr>
     @endforeach
 </table>

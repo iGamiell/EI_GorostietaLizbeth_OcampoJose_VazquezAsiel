@@ -11,7 +11,7 @@ class NoteController extends Controller
     public function index()
     {
         if(auth()->user()->role == 'admin'){
-            $notes = Note::all();
+            $notes = Note::with('user')->get();
         } else {
             $notes = Note::where('user_id', auth()->id())->get();
         }

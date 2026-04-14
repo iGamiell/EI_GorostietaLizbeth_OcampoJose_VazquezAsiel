@@ -2,16 +2,16 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\NoteController;
+use App\Http\Controllers\GoogleController;
+use App\Models\User;
 use App\Models\Activity;
 use App\Models\Note;
 
 
-// Inicio
 Route::get('/', function () {
     if (Auth::check()) {
         return redirect('/dashboard');
@@ -19,34 +19,55 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
-// LOGIN
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 
-// REGISTER
 Route::get('/register', [AuthController::class, 'showRegister']);
 Route::post('/register', [AuthController::class, 'register']);
 
-// LOGOUT
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-
 
 Route::middleware('auth')->group(function () {
 
-    // DASHBOARD SEGÚN ROL
+    Route::get('/google/redirect', [GoogleController::class, 'redirect']);
+    Route::get('/google/callback', [GoogleController::class, 'callback']);
+
     Route::get('/dashboard', function () {
 
         if(auth()->user()->role == 'admin'){
-            return view('admin.dashboard');
+
+            $totalUsers = User::count();
+            $totalActivities = Activity::count();
+            $totalNotes = Note::count();
+
+            $recentUsers = User::latest()->take(5)->get();
+
+            return view('admin.dashboard', compact(
+                'totalUsers',
+                'totalActivities',
+                'totalNotes',
+                'recentUsers'
+            ));
         }
 
-        $activities = Activity::where('user_id', auth()->id())->get();
+        $activities = Activity::where('user_id', auth()->id())
+            ->orderBy('date')
+            ->orderBy('time')
+            ->get();
+
         $notes = Note::where('user_id', auth()->id())->get();
 
-        return view('users.dashboard', compact('activities', 'notes'));
+        $totalActivities = $activities->count();
+        $totalNotes = $notes->count();
 
-    })->middleware('auth')->name('dashboard');
+        return view('users.dashboard', compact(
+            'activities',
+            'notes',
+            'totalActivities',
+            'totalNotes'
+        ));
+
+    })->name('dashboard');
 
     Route::prefix('activities')->name('activities.')->group(function () {
 
@@ -55,7 +76,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/', [ActivityController::class, 'store'])->name('store');
         Route::get('/edit/{id}', [ActivityController::class, 'edit'])->name('edit');
         Route::post('/update/{id}', [ActivityController::class, 'update'])->name('update');
-        Route::get('/delete/{id}', [ActivityController::class, 'destroy'])->name('destroy');
+        Route::post('/delete/{id}', [ActivityController::class, 'destroy'])->name('destroy');
 
     });
 
@@ -66,13 +87,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/', [NoteController::class, 'store'])->name('store');
         Route::get('/edit/{id}', [NoteController::class, 'edit'])->name('edit');
         Route::post('/update/{id}', [NoteController::class, 'update'])->name('update');
-        Route::get('/delete/{id}', [NoteController::class, 'destroy'])->name('destroy');
+        Route::post('/delete/{id}', [NoteController::class, 'destroy'])->name('destroy');
 
     });
 
 });
-
-
 
 Route::middleware(['auth', 'admin'])->group(function () {
 
@@ -80,7 +99,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
         return redirect('/dashboard');
     });
 
-    // CRUD USUARIOS
     Route::prefix('users')->name('users.')->group(function () {
 
         Route::get('/', [UserController::class, 'index'])->name('index');
@@ -88,8 +106,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::post('/', [UserController::class, 'store'])->name('store');
         Route::get('/edit/{id}', [UserController::class, 'edit'])->name('edit');
         Route::post('/update/{id}', [UserController::class, 'update'])->name('update');
-        Route::get('/delete/{id}', [UserController::class, 'destroy'])->name('destroy');
+        Route::post('/delete/{id}', [UserController::class, 'destroy'])->name('destroy');
 
     });
 
 });
+

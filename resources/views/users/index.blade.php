@@ -37,9 +37,12 @@
                     <i class="fas fa-edit"></i>
                 </a>
 
-                <a href="/users/delete/{{ $user->id }}" class="btn btn-danger btn-sm">
-                    <i class="fas fa-trash"></i>
-                </a>
+                <form action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:inline;">
+                    @csrf
+                    <button class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </form>
             </td>
         </tr>
         @endforeach
