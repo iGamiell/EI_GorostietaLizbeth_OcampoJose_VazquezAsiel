@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // Se agrega la columna 'role' después de 'email' con valor 'user' por defecto
+            
         $table->string('role')->default('user')->after('email');
         });
     }

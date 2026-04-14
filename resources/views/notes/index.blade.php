@@ -10,9 +10,10 @@
 
 <table class="table table-striped">
     <tr>
-        <th>Título</th>
-        <th>Notas</th>
         <th>Usuario</th>
+        <th>Título</th>
+        <th>Acciones</th>
+        
     </tr>
 
     @foreach($notes as $n)
