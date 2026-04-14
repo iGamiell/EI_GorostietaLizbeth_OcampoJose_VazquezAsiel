@@ -29,7 +29,7 @@ class AuthController extends Controller
 
         if (Auth::attempt($request->only('email', 'password'))) {
 
-            $request->session()->regenerate(); // 🔐 seguridad
+            $request->session()->regenerate();
 
             return redirect('/dashboard')
                 ->with('success', 'Bienvenido ' . auth()->user()->name);
@@ -77,7 +77,7 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         session()->forget('google_token');
-        session()->flush();
+
         Auth::logout();
 
         $request->session()->invalidate(); 
